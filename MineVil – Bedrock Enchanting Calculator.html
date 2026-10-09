@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MineVil – Bedrock Enchanting Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#04141a;--bg2:#082630;--panel:#0b2f3a;--slot:#12434f;--edge:#0a2a31;--dia:#4aedd9;--dia2:#1bb4c8;--txt:#e0fcff;--mut:#82b9c2;--ench:#c77dff;--bad:#ff7a7a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#dff7fa;--bg2:#c4eef3;--panel:#f2fdff;--slot:#b5e6ec;--edge:#6fb5be;--txt:#06303a;--mut:#3c7480;--dia:#0aa5a0;--dia2:#0a7f93}}
+:root[data-theme="dark"]{--bg:#04141a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);color:var(--txt);font-family:'VT323','Courier New',monospace;font-size:21px;line-height:1.25;
+background-image:linear-gradient(45deg,rgba(74,237,217,.06) 25%,transparent 25%,transparent 75%,rgba(74,237,217,.06) 75%),linear-gradient(-45deg,rgba(74,237,217,.04) 25%,transparent 25%,transparent 75%,rgba(74,237,217,.04) 75%);background-size:56px 56px}
+.px{font-family:'Press Start 2P','Courier New',monospace;letter-spacing:0}
+main{max-width:960px;margin:0 auto;padding:20px 14px 60px}
+header{text-align:center;padding:26px 0 10px}
+.gem{width:84px;height:76px;margin:0 auto 14px;clip-path:polygon(22% 0,78% 0,100% 34%,50% 100%,0 34%);background:conic-gradient(from 20deg,#c9fff7,#4aedd9,#1bb4c8,#e6fffb,#2dd3c9,#0e8ea0,#c9fff7);filter:drop-shadow(0 0 14px #4aedd9);animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{50%{filter:drop-shadow(0 0 26px #4aedd9) brightness(1.2)}}
+h1{font-size:clamp(20px,5vw,34px);margin:0 0 12px;color:var(--dia);text-shadow:3px 3px 0 var(--edge),0 0 18px rgba(74,237,217,.5);line-height:1.3}
+header p{margin:0 auto;max-width:560px;color:var(--mut)}
+.badge{display:inline-block;margin-top:12px;padding:6px 10px;font-size:9px;border:2px solid var(--dia2);color:var(--dia);background:var(--bg2);clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 50%,calc(100% - 8px) 100%,8px 100%,0 50%)}
+section{background:var(--panel);border:3px solid;border-color:var(--dia) var(--edge) var(--edge) var(--dia);padding:16px;margin-top:20px;box-shadow:0 0 0 3px var(--bg),0 0 30px rgba(74,237,217,.12)}
+h2{font-size:12px;margin:0 0 14px;color:var(--dia);line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
+.slot{position:relative;overflow:hidden;background:var(--slot);border:3px solid;border-color:var(--edge) var(--dia2) var(--dia2) var(--edge);color:var(--txt);padding:8px 2px 6px;cursor:pointer;font:inherit;font-size:18px;text-align:center}
+.slot .ic{display:block;font-size:34px;line-height:1.1;margin-bottom:2px}
+.slot:hover{background:#17606e}
+.slot:focus-visible,.en button:focus-visible,.pip:focus-visible,.act:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.slot.on{border-color:#fff var(--ench) var(--ench) #fff;box-shadow:0 0 16px var(--ench)}
+.slot.on .ic{filter:drop-shadow(0 0 7px var(--ench));animation:glow 2s ease-in-out infinite}
+.glint::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 35%,rgba(199,125,255,.55) 48%,rgba(120,60,255,.35) 54%,transparent 66%);background-size:250% 100%;mix-blend-mode:screen;animation:sweep 2.4s linear infinite}
+@keyframes sweep{from{background-position:140% 0}to{background-position:-60% 0}}
+@keyframes glow{50%{filter:drop-shadow(0 0 13px var(--ench)) hue-rotate(25deg)}}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.act{font:inherit;font-size:19px;padding:6px 14px;background:var(--bg2);color:var(--dia);border:3px solid var(--dia2);cursor:pointer}
+.act:hover{background:var(--dia2);color:#04141a}
+.en{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:8px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--slot);border:3px solid var(--edge);padding:6px 8px;position:relative;overflow:hidden}
+.row>button{all:unset;cursor:pointer;flex:1;padding:2px;color:var(--mut)}
+.row.on{border-color:var(--ench);box-shadow:inset 0 0 14px rgba(199,125,255,.35),0 0 12px rgba(199,125,255,.4)}
+.row.on>button{color:#e6c6ff;text-shadow:0 0 8px var(--ench)}
+.row.dis{opacity:.35}.row.dis>button{cursor:not-allowed;text-decoration:line-through}
+.pips{display:flex;gap:3px}
+.pip{all:unset;cursor:pointer;width:26px;height:26px;text-align:center;font-size:16px;line-height:26px;background:var(--bg2);border:2px solid var(--edge);color:var(--mut)}
+.pip.f{background:var(--ench);color:#1b0830;border-color:#fff}
+.row.dis .pip{pointer-events:none}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.stat{background:var(--bg2);border:3px solid var(--dia2);padding:10px;text-align:center}
+.stat b{display:block;font-family:'Press Start 2P',monospace;font-size:20px;color:var(--dia);text-shadow:0 0 12px rgba(74,237,217,.6);margin-bottom:6px}
+.stat span{color:var(--mut);font-size:18px}
+.step{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:var(--bg2);border-left:6px solid var(--dia);padding:10px;margin-bottom:8px}
+.n{font-family:'Press Start 2P',monospace;font-size:12px;color:var(--dia);min-width:28px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{padding:2px 8px;border:2px solid var(--edge);background:var(--slot)}
+.chip.bk{border-color:var(--ench);color:#e6c6ff}
+.chip.it{border-color:var(--dia);color:var(--dia)}
+.plus{color:var(--mut)}
+.meta{display:block;color:var(--mut);font-size:17px;margin-top:2px}
+.cost{font-family:'Press Start 2P',monospace;font-size:13px;color:#b6ff8f;text-align:right;white-space:nowrap}
+.cost small{display:block;font-family:'VT323',monospace;color:var(--mut);font-size:16px;margin-top:3px}
+.buy{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.warn{border:3px solid var(--bad);color:var(--bad);padding:12px}
+.hint{color:var(--mut)}
+.notes{font-size:18px;color:var(--mut)}.notes li{margin-bottom:4px}
+@media(max-width:520px){.step{grid-template-columns:1fr}.cost{text-align:left}.en{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+main{position:relative;z-index:1}
+#bg,#tint{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#tint{background:radial-gradient(ellipse at 50% 30%,color-mix(in srgb,var(--bg) 62%,transparent),color-mix(in srgb,var(--bg) 84%,transparent))}
+.gw{position:relative;width:120px;height:100px;margin:0 auto 10px;display:grid;place-items:center}
+.gw::before{content:"";position:absolute;width:190px;height:190px;background:radial-gradient(circle,rgba(74,237,217,.55),rgba(74,237,217,0) 65%);animation:aura 3s ease-in-out infinite}
+.gem{position:relative;width:100px;height:90px;margin:0;animation:pulse 3s ease-in-out infinite}
+.gem::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.85) 48%,transparent 62%);background-size:260% 100%;animation:sweep 2.6s linear infinite}
+@keyframes aura{50%{transform:scale(1.25);opacity:.7}}
+.sp{position:absolute;width:12px;height:12px;background:#e6fffb;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:tw 2.2s ease-in-out infinite;filter:drop-shadow(0 0 5px #4aedd9)}
+.s1{top:4px;left:6px}.s2{top:16px;right:2px;animation-delay:.7s;width:9px;height:9px}.s3{bottom:6px;left:22px;animation-delay:1.4s;width:8px;height:8px}
+@keyframes tw{0%,100%{transform:scale(0);opacity:0}50%{transform:scale(1.2);opacity:1}}
+h1{background:linear-gradient(100deg,#4aedd9 20%,#fff 45%,#4aedd9 70%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 0 14px rgba(74,237,217,.7)) drop-shadow(3px 3px 0 var(--edge));font-size:clamp(26px,7vw,46px);animation:shine 4s linear infinite}
+@keyframes shine{to{background-position:-220% 0}}
+.ic img,.mi{width:44px;height:44px;image-rendering:pixelated;vertical-align:middle}.mi{width:22px;height:22px}
+.slot .ic{height:46px}
+.d{display:block;font-size:16px;line-height:1.1;color:var(--mut);opacity:.9;margin-top:2px}
+.row.on .d{color:#cfa8ee}
+.en{grid-template-columns:repeat(auto-fill,minmax(310px,1fr))}
+</style></head><body><canvas id="bg"></canvas><div id="tint"></div><main>
+<header><div class="gw"><div class="gem"></div><i class="sp s1"></i><i class="sp s2"></i><i class="sp s3"></i></div><h1 class="px">MINEVIL</h1>
+<p>The cheapest anvil order to put every enchantment you want on one item in Minecraft Bedrock Edition.</p>
+<span class="badge px">BEDROCK EDITION RULES</span></header>
+
+<section><h2 class="px">1. Pick your item</h2><div class="grid" id="items"></div></section>
+<section><h2 class="px">2. Pick enchantments</h2>
+<div class="tools"><button class="act" id="max">Add all (max level)</button><button class="act" id="clr">Clear</button></div>
+<div class="en" id="ench"><span class="hint">Choose an item first.</span></div>
+<p class="hint" style="margin:10px 0 0">Click a name to add it at max level, or click a numeral to set the level. Conflicting enchantments are crossed out.</p></section>
+<section><h2 class="px">3. Cheapest anvil order</h2><div id="out"><span class="hint">Pick an item and at least one enchantment.</span></div></section>
+<section><h2 class="px">Rules used</h2><ul class="notes">
+<li>Each anvil step costs: enchantment levels × book multiplier + prior-work penalty of both sides (2<sup>uses</sup> − 1).</li>
+<li>Any step costing 40 or more levels is "Too Expensive" in survival, so the calculator rejects those orders.</li>
+<li>Bedrock has no Sweeping Edge. Infinity and Mending can share a bow. Incompatible enchantments are dropped for free, so conflicts are blocked up front.</li>
+<li>The search tests every merge order, then picks the lowest total levels. XP points assume you pay each step from level 0; real points depend on your starting level.</li>
+<li>Spear and Lunge enchantment pools are the newest data here; double-check them in your world.</li></ul></section>
+</main>
+<script>
+const EN="prot|Protection|4|1,fprot|Fire Protection|4|1,blast|Blast Protection|4|2,proj|Projectile Protection|4|1,thorns|Thorns|3|4,resp|Respiration|3|2,aqua|Aqua Affinity|1|2,feather|Feather Falling|4|1,depth|Depth Strider|3|2,frost|Frost Walker|2|2,soul|Soul Speed|3|4,sneak|Swift Sneak|3|4,sharp|Sharpness|5|1,smite|Smite|5|1,bane|Bane of Arthropods|5|1,knock|Knockback|2|1,fire|Fire Aspect|2|2,loot|Looting|3|2,eff|Efficiency|5|1,silk|Silk Touch|1|4,fort|Fortune|3|2,unb|Unbreaking|3|1,mend|Mending|1|2,power|Power|5|1,punch|Punch|2|2,flame|Flame|1|2,inf|Infinity|1|4,los|Luck of the Sea|3|2,lure|Lure|3|2,loy|Loyalty|3|1,imp|Impaling|5|2,rip|Riptide|3|2,chan|Channeling|1|4,multi|Multishot|1|2,pierce|Piercing|4|1,qc|Quick Charge|3|1,dens|Density|5|1,breach|Breach|4|2,wind|Wind Burst|3|2,lunge|Lunge|3|2,bind|Curse of Binding|1|4,van|Curse of Vanishing|1|4";
+const A="prot,fprot,blast,proj,thorns,",Z=",unb,mend,bind,van";
+const IT=`sword|Sword|⚔️|sharp,smite,bane,knock,fire,loot,unb,mend,van;axe|Axe|🪓|sharp,smite,bane,eff,silk,fort,unb,mend,van;pick|Pickaxe|⛏️|eff,silk,fort,unb,mend,van;shovel|Shovel|🪏|eff,silk,fort,unb,mend,van;hoe|Hoe|🌾|eff,silk,fort,unb,mend,van;bow|Bow|🏹|power,punch,flame,inf,unb,mend,van;xbow|Crossbow|🎯|multi,pierce,qc,unb,mend,van;trident|Trident|🔱|imp,rip,loy,chan,unb,mend,van;mace|Mace|🔨|dens,breach,wind,smite,bane,fire,unb,mend,van;spear|Spear|🗡️|lunge,sharp,smite,bane,fire,knock,loot,unb,mend,van;helm|Helmet|🪖|${A}resp,aqua${Z};chest|Chestplate|🦺|${A.slice(0,-1)}${Z};legs|Leggings|👖|${A.slice(0,-1)},sneak${Z};boots|Boots|🥾|${A}feather,depth,frost,soul${Z};rod|Fishing Rod|🎣|los,lure,unb,mend,van;shield|Shield|🛡️|unb,mend,van;elytra|Elytra|🪽|unb,mend,bind,van;shears|Shears|✂️|eff,unb,mend,van`;
+const CG=[["prot","fprot","blast","proj"],["sharp","smite","bane"],["dens","breach"],["dens","smite","bane"],["silk","fort"],["depth","frost"],["multi","pierce"],["rip","loy"],["rip","chan"]];
+const R=['','I','II','III','IV','V'],E={},I={};
+EN.split(',').forEach(s=>{const[a,n,m,b]=s.split('|');E[a]={n,m:+m,b:+b}});
+IT.split(';').forEach(s=>{const[id,n,ic,l]=s.split('|');I[id]={n,ic,l:l.split(',')}});
+const $=s=>document.querySelector(s),cf=(a,b)=>a!=b&&CG.some(g=>g.includes(a)&&g.includes(b));
+const DS={prot:"Reduces most damage you take.",fprot:"Less fire and lava damage, shorter burning.",blast:"Less explosion damage and knockback.",proj:"Less damage from arrows and fireballs.",thorns:"Hurts attackers but wears armor faster.",resp:"Breathe longer underwater.",aqua:"Mine at normal speed underwater.",feather:"Reduces fall damage.",depth:"Swim faster underwater.",frost:"Turns water under you into ice.",soul:"Walk faster on soul sand and soul soil.",sneak:"Sneak faster.",sharp:"More melee damage.",smite:"Extra damage to undead mobs.",bane:"Extra damage to spiders and silverfish.",knock:"Knocks enemies farther back.",fire:"Sets targets on fire.",loot:"More drops from mobs.",eff:"Mines blocks faster.",silk:"Blocks drop as themselves.",fort:"More drops from ores and crops.",unb:"Item lasts much longer.",mend:"XP orbs repair the item.",power:"More arrow damage.",punch:"Arrows knock targets back.",flame:"Arrows set targets on fire.",inf:"Shoot without using arrows.",los:"Better treasure odds when fishing.",lure:"Fish bite faster.",loy:"Trident flies back to you after a throw.",imp:"Extra damage to water mobs.",rip:"Launches you in water or rain.",chan:"Calls lightning in thunderstorms.",multi:"Fires three arrows at once.",pierce:"Arrows pass through several mobs.",qc:"Reloads faster.",dens:"Smash damage grows with fall height.",breach:"Smash ignores more armor.",wind:"Smash launches you back up.",lunge:"Dash forward with a spear thrust.",bind:"Armor can't be taken off.",van:"Item vanishes when you die."};
+const PAL={d:"#5cf2e0",D:"#1bb4c8",w:"#effffd",b:"#9a6a35",B:"#5a3a1a",g:"#a8a8a8",G:"#5f5f68",l:"#dcdcdc",t:"#2fb5a8",s:"#f2f2f2",r:"#c0392b",p:"#9b5de5"};
+const SP={sword:"..........dw/.........dd./........dd../.......dd.../...B..dd..../....Bdd...../.....B....../....b.B...../...b...B..../..b........./.b........../B...........",
+axe:"...dd......./..dDDd....../..dDDDb...../...dDb....../.....b....../....b......./....b......./...b......../..b........./.b........../.b........../B...........",
+pick:"..ddddd...../.dDDDDDdd.../dD....bdDd../D....b..dD../....b...D.../....b......./...b......../..b........./.b........../b.........../B...........",
+shovel:"........dd../.......dDDd./.......dDDd./........dd../.......b..../......b...../.....b....../....b......./...b......../..b........./.b........../B...........",
+hoe:"...ddddd..../...dDDDDd.../.......b.d../.......b..../......b...../.....b....../....b......./...b......../..b........./.b........../B...........",
+bow:"....bb....../.....Bbs..../......b.s.../.....b...s../.....b...s../....b....s../....b....s../.....b...s../.....b...s../......b.s.../.....Bbs..../....bb......",
+xbow:"..bbbbbbb.../.b...s...b../.b...s...b../..b..s..b.../...b.s.b..../....bsb...../.....B....../.....B....../.....B......",
+trident:"..t..t..t.../..t..t..t.../..t..t..t.../..ttttttt.../....ttt...../.....b....../.....b....../.....b....../.....b....../.....b....../.....B......",
+mace:"....GGGG..../...GgGgGG.../..GgGGgGgG../..GGgGgGGG../...GgGgGG.../....GGGG..../.....b....../.....b....../.....b....../.....b....../.....B......",
+spear:"..........lw/.........lg./.........b../........b.../.......b..../......b...../.....b....../....b......./...b......../..b........./.b........../B...........",
+helm:"...dddddd.../..dwwwwwdD../.dwdddddDDD./.dwd....dDD./.dd......dD./.dD......DD.",
+chest:"dd..dddd..dd/dddddddddddd/dDdddDDdddDd/.dddddddddD./.dddddddddD./.dDddddddDD./.DDDDDDDDDD.",
+legs:"dddddddddddd/dwddddddddDd/dddddddddddd/ddddD..Ddddd/dddD....Dddd/dddD....Dddd/dddD....Dddd/DDD......DDD",
+boots:"..dd....dd../..dd....dd../..dd....dd../.dddd..dddd./dDDDD.dDDDD.",
+rod:"..........b./.........b.s/........b..s/.......b...s/......b....s/.....b.....s/....b.....sr/...b......r./..b........./.b........../B...........",
+shield:"GGGGGGGGGGGG/GbbbbGbbbbbG/GbbbbGbbbbbG/GGGGGGGGGGGG/GbbbbGbbbbbG/.GbbbGbbbbG./..GbbGbbbG../...GGGGGG...",
+elytra:"gg........gg/gllg....gllg/glllg..glllg/glllgggglllg/.gllllllllg./..ggllllgg../....gggg....",
+shears:"....g..g..../.....gg...../.....gg...../....g..g..../...g....g.../..rr....rr../.r..r..r..r./.r..r..r..r./..rr....rr..",
+gem:"..dddddddd../.dwwddddDDd./dwddddddDDDd/.dddddddDDd./..ddddDDDd../...dddDDd.../....ddDd..../.....dd.....",
+book:"BBBBBBBBBB../BpppppppppB./BpwwwwwwwpB./BppppppppwB./BpwwwwwwwpB./BppppppppwB./BBBBBBBBBB../"};
+const SC={};function spr(k){if(SC[k])return SC[k];const R=SP[k].split("/"),c=document.createElement("canvas");c.width=c.height=12;const x=c.getContext("2d"),o=Math.floor((12-R.length)/2);R.forEach((row,y)=>[...row].forEach((ch,i)=>{if(PAL[ch]){x.fillStyle=PAL[ch];x.fillRect(i,y+o,1,1)}}));return SC[k]=c}
+Object.keys(I).forEach(id=>I[id].ic=`<img class="mi" alt="" src="${spr(id).toDataURL()}">`);
+(function(){const cv=$('#bg'),x=cv.getContext('2d'),K=Object.keys(SP),P=[];let W,H;
+const size=()=>{W=cv.width=innerWidth;H=cv.height=innerHeight};size();addEventListener('resize',size);
+for(let i=0;i<34;i++)P.push({k:K[i%K.length],x:Math.random()*W,y:Math.random()*H,s:3+Math.random()*3|0,v:16+Math.random()*26,a:Math.random()*6,r:(Math.random()-.5)*.6});
+let t=0;const draw=dt=>{x.clearRect(0,0,W,H);x.imageSmoothingEnabled=false;P.forEach(q=>{q.y+=q.v*dt;q.a+=dt*.5;if(q.y>H+60){q.y=-60;q.x=Math.random()*W}const d=12*q.s;x.save();x.globalAlpha=.8;x.translate(q.x+Math.sin(q.a)*18,q.y);x.rotate(q.r+Math.sin(q.a)*.15);x.drawImage(spr(q.k),-d/2,-d/2,d,d);x.restore()})};
+if(matchMedia('(prefers-reduced-motion:reduce)').matches)draw(0);else{const f=n=>{const dt=Math.min(.05,(n-t)/1000||0);t=n;draw(dt);requestAnimationFrame(f)};requestAnimationFrame(f)}})();
+let cur=null,sel={};
+function drawItems(){$('#items').innerHTML=Object.entries(I).map(([id,o])=>`<button class="slot ${cur==id?'on glint':''}" data-i="${id}"><span class="ic">${o.ic}</span>${o.n}</button>`).join('')}
+function drawEnch(){
+ if(!cur){return}
+ $('#ench').innerHTML=I[cur].l.map(id=>{const e=E[id],on=id in sel,dis=!on&&Object.keys(sel).some(k=>cf(k,id));
+ let p='';for(let l=1;l<=e.m;l++)p+=`<button class="pip ${on&&sel[id]>=l?'f':''}" data-e="${id}" data-l="${l}" aria-label="${e.n} ${R[l]}">${R[l]}</button>`;
+ return `<div class="row ${on?'on glint':''} ${dis?'dis':''}"><button data-e="${id}" ${dis?'title="Conflicts with a selected enchantment"':''}>${e.n}<span class="d">${DS[id]}</span></button><span class="pips">${p}</span></div>`}).join('')}
+const pts=L=>L<=16?L*L+6*L:L<=31?2.5*L*L-40.5*L+360:4.5*L*L-162.5*L+2220;
+function solve(S){
+ const n=S.length,N=1<<n,W=6,CAP=39,pen=w=>(1<<w)-1,sum=Array(N).fill(0);
+ for(let m=1;m<N;m++){const i=31-Math.clz32(m&-m);sum[m]=sum[m&(m-1)]+S[i].lv*E[S[i].id].b}
+ const bk=Array.from({length:N},()=>Array(W+1).fill(null));
+ for(let i=0;i<n;i++)bk[1<<i][0]={c:0};
+ for(let m=1;m<N;m++){if(!(m&(m-1)))continue;
+  for(let a=(m-1)&m;a>0;a=(a-1)&m){const b=m^a;
+   for(let x=0;x<=W;x++){const X=bk[a][x];if(!X)continue;
+    for(let y=0;y<=W;y++){const Y=bk[b][y];if(!Y)continue;
+     const st=sum[b]+pen(x)+pen(y),w=Math.max(x,y)+1;if(st>CAP||w>W)continue;
+     const c=X.c+Y.c+st;if(!bk[m][w]||c<bk[m][w].c)bk[m][w]={c,a,x,b,y,st}}}}}
+ const it=Array.from({length:N},()=>Array(W+1).fill(null));it[0][0]={c:0};
+ for(let m=0;m<N-1;m++)for(let w=0;w<=W;w++){const P=it[m][w];if(!P)continue;const rest=(N-1)^m;
+  for(let s=rest;s>0;s=(s-1)&rest)for(let y=0;y<=W;y++){const B=bk[s][y];if(!B)continue;
+   const st=sum[s]+pen(w)+pen(y),nw=Math.max(w,y)+1;if(st>CAP||nw>W)continue;
+   const c=P.c+B.c+st,t=m|s;if(!it[t][nw]||c<it[t][nw].c)it[t][nw]={c,pm:m,pw:w,s,y,st}}}
+ let bw=-1;for(let w=0;w<=W;w++)if(it[N-1][w]&&(bw<0||it[N-1][w].c<it[N-1][bw].c))bw=w;
+ if(bw<0)return null;
+ const lab=m=>S.filter((_,i)=>m>>i&1).map(s=>E[s.id].n+' '+R[s.lv]),steps=[];
+ const tb=(m,w)=>{const B=bk[m][w];if(!B.a)return;tb(B.a,B.x);tb(B.b,B.y);steps.push({l:lab(B.a),r:lab(B.b),lw:B.x,rw:B.y,st:B.st,bk:1})};
+ const ti=(m,w)=>{if(!m)return;const P=it[m][w];ti(P.pm,P.pw);tb(P.s,P.y);steps.push({l:lab(P.pm),r:lab(P.s),lw:P.pw,rw:P.y,st:P.st,fin:P.pm==0?0:0})};
+ ti(N-1,bw);return{steps,total:it[N-1][bw].c,w:bw}}
+function calc(){
+ const S=Object.keys(sel).map(id=>({id,lv:sel[id]})),o=$('#out');
+ if(!cur||!S.length){o.innerHTML='<span class="hint">Pick an item and at least one enchantment.</span>';return}
+ const r=solve(S);
+ if(!r){o.innerHTML='<div class="warn">Too Expensive: no order keeps every anvil step under 40 levels. Remove a high-cost enchantment (Thorns, Soul Speed, Silk Touch, Infinity and curses cost the most) or lower a level.</div>';return}
+ const cp=a=>a.map(x=>`<span class="chip bk">${x}</span>`).join('<span class="plus">+</span>');
+ const buy=S.map(s=>`<span class="chip bk">📖 ${E[s.id].n} ${R[s.lv]}</span>`).join('');
+ const pointsTotal=Math.round(r.steps.reduce((t,s)=>t+pts(s.st),0));
+ let k=0,html=`<div class="sum"><div class="stat"><b>${r.total}</b><span>total levels</span></div><div class="stat"><b>${pointsTotal}</b><span>XP points</span></div><div class="stat"><b>${r.steps.length}</b><span>anvil steps</span></div><div class="stat"><b>${Math.max(...r.steps.map(s=>s.st))}</b><span>priciest step</span></div></div>
+ <p style="margin:0 0 6px">Books to get first (one per enchantment):</p><div class="buy">${buy}</div>`;
+ html+=r.steps.map((s,i)=>{const last=i==r.steps.length-1;const left=s.bk?cp(s.l):(s.l.length?`<span class="chip it">${I[cur].ic} ${I[cur].n} + ${s.l.join(', ')}</span>`:`<span class="chip it">${I[cur].ic} ${I[cur].n} (plain)</span>`);
+ return `<div class="step"><span class="n">${i+1}</span><div><div class="chips">${left}<span class="plus">+</span>${cp(s.r)}</div><span class="meta">Left in the anvil: ${s.bk?'book':'item'}${last?' (finished item)':''} · prior work ${s.lw} / ${s.rw}</span></div><div class="cost">${s.st} lvl<small>${Math.round(pts(s.st))} XP</small></div></div>`}).join('');
+ o.innerHTML=html}
+document.addEventListener('click',e=>{
+ const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.i){cur=t.dataset.i;sel={};drawItems();drawEnch();calc()}
+ else if(t.dataset.e){const id=t.dataset.e,l=t.dataset.l;
+  if(l){sel[id]=sel[id]==+l&&Object.keys(sel).length&&0?0:+l}
+  else if(id in sel)delete sel[id];else sel[id]=E[id].m;
+  drawEnch();calc()}
+ else if(t.id=='max'&&cur){sel={};I[cur].l.forEach(id=>{if(id=='bind'||id=='van')return;if(!Object.keys(sel).some(k=>cf(k,id)))sel[id]=E[id].m});drawEnch();calc()}
+ else if(t.id=='clr'){sel={};drawEnch();calc()}});
+drawItems();
+</script></body></html>
